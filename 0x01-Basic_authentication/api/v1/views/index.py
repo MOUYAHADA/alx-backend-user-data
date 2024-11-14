@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """ Module of Index views
 """
+from operator import truediv
 from flask import jsonify, abort
 from api.v1.views import app_views
+from models.user import User
 
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
@@ -32,7 +34,14 @@ def users() -> str:
     Return:
       - the number of users
     """
-    return jsonify({"status": "OK"})
+    users_list = []
+    users = User.all()
+    for user in users:
+        user_dict = user.to_json(True)
+        del user_dict['_password']
+        users_list.append(user_dict)
+
+    return jsonify(users_list)
 
 
 @app_views.route('/unauthorized', strict_slashes=False)
