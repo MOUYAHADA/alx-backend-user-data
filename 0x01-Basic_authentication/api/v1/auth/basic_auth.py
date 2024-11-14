@@ -51,7 +51,9 @@ class BasicAuth(Auth):
         if (d is None) or (type(d) is not str) or (':' not in d):
             return None, None
 
-        email, password = d.split(":")
+        email, password = d.split(":", 1)
+        if None in (email, password):
+            return None, None
         return email, password
 
     def user_object_from_credentials(self, user_email: str,
