@@ -2,6 +2,7 @@
 """BasicAuth that inherits from Auth"""
 
 from base64 import b64decode
+from typing import Tuple
 from api.v1.auth.auth import Auth
 
 
@@ -36,3 +37,17 @@ class BasicAuth(Auth):
             return None
 
         return header.decode('utf-8')
+
+    def extract_user_credentials(
+            self,
+            decoded_base64_authorization_header: str) -> Tuple[str, str]:
+        """returns the user email and password
+        from the Base64 decoded value."""
+
+        d = decoded_base64_authorization_header
+
+        if (d is None) or (type(d) is not str) or (':' not in d):
+            return None, None
+
+        email, password = d.split(":")
+        return email, password
