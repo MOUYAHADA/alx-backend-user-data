@@ -35,12 +35,17 @@ def load_auth():
     """loads auth before request"""
     if auth:
         excluded_paths = [
+            '/api/v1/auth_session/login/',
             '/api/v1/status/',
             '/api/v1/unauthorized/',
             '/api/v1/forbidden/'
         ]
 
         if auth.require_auth(request.path, excluded_paths) is True:
+            if auth.authorization_header(request) and\
+                    auth.session_cookie(request):
+                abort(401, description='Unauthorized')
+
             if auth.authorization_header(request) is None:
                 abort(401, description='Unauthorized')
 
