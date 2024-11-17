@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """ Module of Index views
 """
+from operator import truediv
 from flask import jsonify, abort
 from api.v1.views import app_views
+from models.user import User
 
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
@@ -26,17 +28,35 @@ def stats() -> str:
     return jsonify(stats)
 
 
-@app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
+@app_views.route('/users', strict_slashes=False)
+def users() -> str:
+    """ GET /api/v1/users
+    Return:
+      - the number of users
+    """
+    users_list = []
+    users = User.all()
+    for user in users:
+        user_dict = user.to_json(True)
+        del user_dict['_password']
+        users_list.append(user_dict)
+
+    return jsonify(users_list)
+
+
+@app_views.route('/unauthorized', strict_slashes=False)
 def unauthorized() -> str:
     """ GET /api/v1/unauthorized
-    Return - raises 401 error
+    Return:
+      401 error: Unauthorized
     """
     abort(401)
 
 
-@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+@app_views.route('/forbidden', strict_slashes=False)
 def forbidden() -> str:
     """ GET /api/v1/forbidden
-    Return - raises 403 error
+    Return:
+      401 error: Forbidden
     """
     abort(403)

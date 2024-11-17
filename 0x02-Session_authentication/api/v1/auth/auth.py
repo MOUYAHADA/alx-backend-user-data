@@ -1,51 +1,35 @@
 #!/usr/bin/env python3
-"""
-Manage API authentication system
-"""
-from flask import request
+"""Auth class for managing API Authentication"""
 from typing import List, TypeVar
-from os import getenv
+from flask import request
+import re
 
 
-class Auth():
-    """
-    Manage API authentication methods
-    """
+class Auth:
+    """Auth class fo authentication"""
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Return boolean """
-        if path is None or excluded_paths is None or not len(excluded_paths):
+        """This function is used to require authentication"""
+        if not (path and excluded_paths):
             return True
 
-        if path[-1] != '/':
-            path += '/'
-        if excluded_paths[-1] != '/':
-            excluded_paths += '/'
+        if not path.endswith('/'):
+            path = path + '/'
 
-        astericks = [stars[:-1]
-                     for stars in excluded_paths if stars[-1] == '*']
+        for ep in excluded_paths:
+            if '*' in ep:
+                if path.startswith(ep.split('*')[0]):
+                    return False
 
-        for stars in astericks:
-            if path.startswith(stars):
-                return False
-
-        if path in excluded_paths:
-            return False
-        return True
+        return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
-        """ Request Flask object """
-        if request is None or 'Authorization' not in request.headers:
-            return None
-        return request.headers.get('Authorization')
-
-    def current_user(self, request=None) -> TypeVar('User'):
-        """ Flask request object """
+        """Authorization header"""
+        if request:
+            if request.headers.get('Authorization', None):
+                return request.headers.get('Authorization')
         return None
 
-    def session_cookie(self, request=None):
-        """ Returns request cookie value """
-        if request is None:
-            return None
-        cookie = getenv('SESSION_NAME')
-        return request.cookies.get(cookie)
+    def current_user(self, request=None) -> TypeVar('User'):
+        """Get current user"""
+        return None
