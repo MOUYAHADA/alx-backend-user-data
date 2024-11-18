@@ -7,6 +7,7 @@ from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
 
+from api.v1.auth.session_exp_auth import SessionExpAuth
 from api.v1.views import app_views
 
 
@@ -28,6 +29,9 @@ elif AUTH_TYPE == 'basic_auth':
 elif AUTH_TYPE == 'session_auth':
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
+elif AUTH_TYPE == 'session_exp_auth':
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionExpAuth()
 
 
 @app.before_request
@@ -41,7 +45,7 @@ def load_auth():
             '/api/v1/forbidden/'
         ]
 
-        if auth.require_auth(request.path, excluded_paths) is True:
+        if auth.require_auth(request.path, excluded_paths):
 
             if auth.authorization_header(request) is None:
                 if auth.session_cookie(request) is None:

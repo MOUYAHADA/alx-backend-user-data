@@ -38,9 +38,9 @@ def login():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
-    from api.v1.auth.session_auth import SessionAuth
+    from api.v1.app import auth
     user = user.to_json(True)
-    session = SessionAuth().create_session(user.get('id'))
+    session = auth.create_session(user.get('id'))
 
     res = jsonify(user)
     session_name = os.getenv('SESSION_NAME')
@@ -53,8 +53,8 @@ def login():
                  strict_slashes=False)
 def logout():
     """Logout function - deletes user session"""
-    from api.v1.auth.session_auth import SessionAuth
-    res = SessionAuth().destroy_session(request)
+    from api.v1.app import auth
+    res = auth.destroy_session(request)
     if not res:
         abort(404)
     return jsonify({}), 200
