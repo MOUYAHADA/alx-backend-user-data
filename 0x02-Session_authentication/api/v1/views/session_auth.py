@@ -10,7 +10,7 @@ from flask import request
 from models.user import User
 
 
-@app_views.post('/auth_session/login', strict_slashes=False)
+@app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """Login function that authenticates a user and creates a session.
 
@@ -18,7 +18,8 @@ def login():
     validates them, and if successful, creates a session ID stored in a cookie.
 
     Returns:
-        Response: A JSON response containing user information or an error message.
+        Response: A JSON response containing user information or an
+        error message.
     """
     email = request.form.get('email')
     password = request.form.get('password')
