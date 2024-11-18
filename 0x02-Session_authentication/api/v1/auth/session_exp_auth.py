@@ -17,7 +17,13 @@ class SessionExpAuth(SessionAuth):
             if session_duration else 0
 
     def create_session(self, user_id: str = None):
-        """Creates a new session for user"""
+        """
+        Creates a new session for the user.
+
+        Returns:
+            str: The session ID for the newly created session.
+        """
+
         session_id = super().create_session(user_id)
         if session_id:
             session_dict = {"user_id": user_id,
@@ -26,7 +32,16 @@ class SessionExpAuth(SessionAuth):
             return session_id
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
-        """Returns User Id if session is not expired"""
+        """Returns the User ID associated with the given
+        session ID if the session is not expired.
+
+        Args:
+            session_id (str): The session ID for which to retrieve the User ID.
+
+        Returns:
+            str: The User ID if the session is valid and
+            not expired; otherwise, None.
+        """
         if session_id:
             session = __class__.user_id_by_session_id.get(session_id, None)
             if session:
