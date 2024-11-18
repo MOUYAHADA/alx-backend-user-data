@@ -3,9 +3,8 @@
 IDs stored in cookies."""
 import os
 from flask.json import jsonify
-from api.v1.auth.session_auth import SessionAuth
 from api.v1.views import app_views
-from flask import request
+from flask import request, abort
 
 from models.user import User
 
@@ -39,6 +38,7 @@ def login():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
+    from api.v1.auth.session_auth import SessionAuth
     user = user.to_json(True)
     session = SessionAuth().create_session(user.get('id'))
 
@@ -47,3 +47,14 @@ def login():
     res.set_cookie(session_name, session)
 
     return res
+
+
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                 strict_slashes=False)
+def logout():
+    """Logout function - deletes user session"""
+    from api.v1.auth.session_auth import SessionAuth
+    res = SessionAuth().destroy_session(request)
+    if not res:
+        abort(404)
+    return jsonify({}), 200
