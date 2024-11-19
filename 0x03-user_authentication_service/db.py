@@ -9,13 +9,13 @@ from user import Base, User
 
 
 class DB:
-    """DB class
+    """DB class - for managing database
     """
 
     def __init__(self) -> None:
         """Initialize a new DB instance
         """
-        self._engine = create_engine("sqlite:///a.db")
+        self._engine = create_engine("sqlite:///a.db", echo=True)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
         self.__session = None
