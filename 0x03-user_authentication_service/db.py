@@ -3,12 +3,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-import bcrypt
 from sqlalchemy.exc import NoResultFound, InvalidRequestError
 
 from user import Base, User
-
-salt = bcrypt.gensalt(12)
 
 
 class DB:
@@ -36,9 +33,8 @@ class DB:
         """Add new user to DB
         """
         if email and password:
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
             user = User()
-            user.hashed_password = hashed_password
+            user.hashed_password = password
             user.email = email
             self._session.add(user)
             self._session.commit()
