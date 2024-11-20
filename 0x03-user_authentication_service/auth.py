@@ -86,6 +86,19 @@ class Auth:
         """Updates the corresponding user’s session ID to None"""
         if type(user_id) is int:
             try:
-                user = self._db.update_user(user_id=user_id, session_id=None)
+                self._db.update_user(user_id=user_id, session_id=None)
             except ValueError:
                 pass
+
+    def get_reset_password_token(self, email: str) -> str:
+        """Get a token for resetting user password
+        Returns:
+            str: reset token"""
+        if email:
+            try:
+                user = self._db.find_user_by(email=email)
+                token = _generate_uuid()
+                self._db.update_user(user.id, reset_token=token)
+                return token
+            except NoResultFound:
+                raise ValueError
