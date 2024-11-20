@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Basic Flask app"""
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 
 
@@ -29,7 +29,7 @@ def users():
 
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
-def sessions():
+def login():
     """Creates a new session for user"""
     email = request.form.get('email')
     password = request.form.get('password')
@@ -45,6 +45,22 @@ def sessions():
             return res
 
     abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout():
+    """Find the user with the requested session ID. If the user exists
+    destroy the session and redirect the user to GET /"""
+    session_id = request.cookies.get('session_id')
+    if session_id:
+        try:
+            user = AUTH.get_user_from_session_id(session_id)
+            AUTH.destroy_session(user.id)
+            return redirect('/')
+        except ValueError:
+            pass
+
+    abort(403)
 
 
 if __name__ == '__main__':
