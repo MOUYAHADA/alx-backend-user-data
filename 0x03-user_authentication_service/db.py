@@ -63,11 +63,12 @@ class DB:
         Raises ValueError if argument does not correspond to user
         attribute passed
         """
-        user = self.find_user_by(id=user_id)
-        if user:
-            for key, value in kwargs.items():
-                if hasattr(user, key):
-                    setattr(user, key, value)
-                else:
-                    raise ValueError
-            self._session.commit()
+        if user_id is None and type(user_id) != int:
+            user = self.find_user_by(id=user_id)
+            if user:
+                for key, value in kwargs.items():
+                    if hasattr(user, key):
+                        setattr(user, key, value)
+                    else:
+                        raise ValueError
+                self._session.commit()
